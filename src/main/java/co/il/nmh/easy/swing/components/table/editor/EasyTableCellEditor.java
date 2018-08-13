@@ -28,12 +28,20 @@ public class EasyTableCellEditor extends DefaultCellEditor
 		this.easyTable = easyTable;
 	}
 
-	private Object oldValue;
+	private int row;
 
 	@Override
 	public Object getCellEditorValue()
 	{
-		return oldValue;
+		if (row == 0)
+		{
+			return easyTable.get(row);
+		}
+
+		else
+		{
+			return null;
+		}
 	}
 
 	@Override
@@ -41,9 +49,7 @@ public class EasyTableCellEditor extends DefaultCellEditor
 	{
 		String columnName = table.getColumnName(column);
 
-		this.oldValue = value;
-
-		value = table.getValueAt(row, 0);
+		value = easyTable.get(row);
 
 		Component renderObject = easyTable.renderObject(columnName, value);
 

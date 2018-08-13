@@ -16,19 +16,33 @@ public class EasyScrollPane extends JScrollPane
 {
 	private static final long serialVersionUID = 8252709255450716963L;
 
-	public EasyScrollPane(Component component)
-	{
-		super(component);
-	}
+	protected Dimension dimension;
 
 	public EasyScrollPane(EasyTable easyTable)
 	{
-		super(easyTable.getTable());
+		this(easyTable.getTable());
+	}
+
+	public EasyScrollPane(EasyTable easyTable, int minWidth, int minHeight)
+	{
+		this(easyTable.getTable(), minWidth, minHeight);
+	}
+
+	public EasyScrollPane(Component component)
+	{
+		this(component, 50, 50);
+	}
+
+	public EasyScrollPane(Component component, int width, int height)
+	{
+		super(component);
+
+		dimension = new Dimension(width, height);
 	}
 
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(50, 50);
+		return dimension;
 	}
 }

@@ -46,7 +46,15 @@ public class EasyTableComboBoxCellRenderer extends EasyTableCellRenderer
 						comboBox.addItem(item);
 					}
 
-					comboBox.setSelectedIndex(comboBoxData.getSelectedIndex());
+					if (comboBoxData.getSelectedIndex() >= comboBox.getItemCount())
+					{
+						comboBoxData.setSelectedIndex(0);
+					}
+
+					if (comboBox.getItemCount() > 0)
+					{
+						comboBox.setSelectedIndex(comboBoxData.getSelectedIndex());
+					}
 				}
 			}
 		}

@@ -139,7 +139,8 @@ public abstract class EasyTable
 
 	public Object get(int row)
 	{
-		return table.getValueAt(row, 0);
+		Object value = table.getValueAt(row, 0);
+		return value;
 	}
 
 	public void removeRow(int row)

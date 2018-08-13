@@ -6,9 +6,12 @@ import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.swing.DefaultCellEditor;
+import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.table.TableCellEditor;
 
 import co.il.nmh.easy.swing.components.table.EasyTable;
 import co.il.nmh.easy.swing.components.table.data.ComboBoxData;
@@ -20,36 +23,43 @@ import co.il.nmh.easy.swing.components.table.listeners.EasyTableComboChangedList
  *
  */
 
-public class EasyTableComboBoxCellEditor extends DefaultCellEditor
+public class EasyTableComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor
 {
 	private static final long serialVersionUID = 4713030293576275742L;
 
 	protected EasyTable easyTable;
 	protected EasyTableComboBoxRender easyTableComboBoxRender;
+	protected boolean cellEditingStopped = false;
 
 	public EasyTableComboBoxCellEditor(EasyTable easyTable, EasyTableComboBoxRender easyTableComboBoxRender)
 	{
-		super(new JComboBox<>());
-
 		this.easyTable = easyTable;
 		this.easyTableComboBoxRender = easyTableComboBoxRender;
 	}
 
-	private Object oldValue;
+	private int row;
 
 	@Override
 	public Object getCellEditorValue()
 	{
-		return oldValue;
+		if (row == 0)
+		{
+			return easyTable.get(row);
+		}
+
+		else
+		{
+			return null;
+		}
 	}
 
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
 	{
+		this.row = row;
 		String columnName = table.getColumnName(column);
-		this.oldValue = value;
 
-		value = table.getValueAt(row, 0);
+		value = easyTable.get(row);
 
 		JComboBox<String> comboBox = new JComboBox<>();
 		comboBox.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
@@ -70,14 +80,47 @@ public class EasyTableComboBoxCellEditor extends DefaultCellEditor
 						comboBox.addItem(item);
 					}
 
-					comboBox.setSelectedIndex(comboBoxData.getSelectedIndex());
+					if (comboBoxData.getSelectedIndex() >= comboBox.getItemCount())
+					{
+						comboBoxData.setSelectedIndex(0);
+					}
+
+					if (comboBox.getItemCount() > 0)
+					{
+						comboBox.setSelectedIndex(comboBoxData.getSelectedIndex());
+					}
 				}
 			}
 		}
 
 		comboBox.addActionListener(new ComboBoxListener(comboBox, columnName, row, column, value));
+		comboBox.addPopupMenuListener(new PopupMenuListener()
+		{
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+			{
+				cellEditingStopped = false;
+			}
 
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
+			{
+				cellEditingStopped = true;
+				fireEditingCanceled();
+			}
+
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e)
+			{
+			}
+		});
 		return comboBox;
+	}
+
+	@Override
+	public boolean stopCellEditing()
+	{
+		return cellEditingStopped;
 	}
 
 	private class ComboBoxListener implements ActionListener

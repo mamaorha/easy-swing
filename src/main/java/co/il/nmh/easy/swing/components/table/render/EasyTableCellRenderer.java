@@ -21,7 +21,7 @@ public class EasyTableCellRenderer implements TableCellRenderer
 	{
 		String columnName = table.getColumnName(column);
 
-		value = table.getValueAt(row, 0);
+		value = easyTable.get(row);
 
 		return render(table, isSelected, columnName, value);
 	}
