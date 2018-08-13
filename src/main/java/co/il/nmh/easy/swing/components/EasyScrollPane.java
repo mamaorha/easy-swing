@@ -5,6 +5,8 @@ import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 
+import co.il.nmh.easy.swing.components.table.EasyTable;
+
 /**
  * @author Maor Hamami
  *
@@ -17,6 +19,11 @@ public class EasyScrollPane extends JScrollPane
 	public EasyScrollPane(Component component)
 	{
 		super(component);
+	}
+
+	public EasyScrollPane(EasyTable easyTable)
+	{
+		super(easyTable.getTable());
 	}
 
 	@Override
