@@ -121,6 +121,11 @@ public abstract class EasyTable
 		return (DefaultTableModel) table.getModel();
 	}
 
+	public int rowCount()
+	{
+		return getModel().getRowCount();
+	}
+
 	public void setAutoCreateRowSorter(boolean autoCreateRowSorter)
 	{
 		table.setAutoCreateRowSorter(autoCreateRowSorter);
