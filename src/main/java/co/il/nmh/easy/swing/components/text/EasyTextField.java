@@ -1,11 +1,9 @@
 package co.il.nmh.easy.swing.components.text;
 
-import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.JTextPane;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
 import co.il.nmh.easy.swing.components.text.listeners.TextChangedListener;
@@ -17,15 +15,15 @@ import co.il.nmh.easy.swing.utils.DocumentUtils;
  *
  */
 
-public class EasyTextPane extends JTextPane
+public class EasyTextField extends JTextField
 {
 	private static final long serialVersionUID = 7203044240404693846L;
 
 	protected Set<TextChangedListener> textChangedListeners;
 
-	public EasyTextPane()
+	public EasyTextField(int size)
 	{
-		setBorder(BorderFactory.createLineBorder(Color.gray));
+		super(size);
 
 		textChangedListeners = new HashSet<>();
 
