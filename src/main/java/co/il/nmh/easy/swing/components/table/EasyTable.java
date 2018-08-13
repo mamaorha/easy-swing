@@ -34,7 +34,7 @@ import co.il.nmh.easy.swing.listeners.MouseClickListener;
 
 public abstract class EasyTable
 {
-	private JTable table;
+	protected JTable table;
 
 	protected Map<String, Integer> columnNameToIndexMap;
 	protected Set<EasyTableClickListener> easyTableClickListeners;
