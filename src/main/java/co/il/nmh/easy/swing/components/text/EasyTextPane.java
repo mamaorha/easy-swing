@@ -44,4 +44,9 @@ public class EasyTextPane extends JTextPane
 
 		DocumentUtils.supportUndoRedo(this, getDocument());
 	}
+
+	public void addTextChangedListener(TextChangedListener textChangedListener)
+	{
+		textChangedListeners.add(textChangedListener);
+	}
 }
