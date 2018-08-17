@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -22,34 +25,49 @@ public class EasyConsolePanel extends JPanel
 {
 	private static final long serialVersionUID = -4806731606850804771L;
 
+	protected DateFormat dateFormat;
 	protected JButton clearBtn;
 	protected EasyTextPane consoleRtb;
 
 	public EasyConsolePanel()
 	{
-		setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridy++;
+		this(null);
+	}
 
+	public EasyConsolePanel(DateFormat dateFormat)
+	{
+		setLayout(new GridBagLayout());
+
+		buildPanel();
+		addEvents();
+
+		if (null == dateFormat)
+		{
+			dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+		}
+
+		this.dateFormat = dateFormat;
+	}
+
+	private void buildPanel()
+	{
 		consoleRtb = new EasyTextPane();
 		consoleRtb.setEditable(false);
 
-		EasyScrollPane scrollPane = new EasyScrollPane(consoleRtb);
+		clearBtn = new JButton("clear");
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy++;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		add(scrollPane, gbc);
-
-		clearBtn = new JButton("clear");
+		add(new EasyScrollPane(consoleRtb), gbc);
 
 		gbc.gridy++;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-
 		add(clearBtn, gbc);
-
-		addEvents();
 	}
 
 	private void addEvents()
@@ -102,7 +120,7 @@ public class EasyConsolePanel extends JPanel
 			}
 
 			Document doc = consoleRtb.getStyledDocument();
-			doc.insertString(doc.getLength(), text + "\n", attributes);
+			doc.insertString(doc.getLength(), wrapText(text) + "\n", attributes);
 
 			consoleRtb.setCaretPosition(doc.getLength());
 		}
@@ -110,5 +128,12 @@ public class EasyConsolePanel extends JPanel
 		catch (Exception exc)
 		{
 		}
+	}
+
+	private String wrapText(String text)
+	{
+		String date = dateFormat.format(new Date());
+
+		return date + " - " + text;
 	}
 }

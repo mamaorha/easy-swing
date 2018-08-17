@@ -1,6 +1,7 @@
 package co.il.nmh.easy.swing.utils;
 
 import java.awt.event.ActionEvent;
+import java.lang.reflect.Method;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -43,9 +44,12 @@ public class DocumentUtils
 			{
 				try
 				{
-					if (manager.canUndo())
+					if (manager.canUndo() && component.isEnabled())
 					{
-						manager.undo();
+						if (isEditable(component))
+						{
+							manager.undo();
+						}
 					}
 				}
 				catch (CannotUndoException e)
@@ -67,9 +71,12 @@ public class DocumentUtils
 			{
 				try
 				{
-					if (manager.canRedo())
+					if (manager.canRedo() && component.isEnabled())
 					{
-						manager.redo();
+						if (isEditable(component))
+						{
+							manager.redo();
+						}
 					}
 				}
 				catch (CannotRedoException e)
@@ -80,5 +87,22 @@ public class DocumentUtils
 
 		// Bind the redo action to ctl-Y
 		component.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
+	}
+
+	private static boolean isEditable(JComponent component)
+	{
+		try
+		{
+			Method method = component.getClass().getMethod("isEditable");
+
+			boolean isEditable = (boolean) method.invoke(component);
+			return isEditable;
+		}
+
+		catch (Exception e)
+		{
+		}
+
+		return true;
 	}
 }
