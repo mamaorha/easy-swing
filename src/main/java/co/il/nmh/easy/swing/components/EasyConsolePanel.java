@@ -21,6 +21,10 @@ import javax.swing.text.StyleContext;
 
 import co.il.nmh.easy.swing.components.text.EasyTextPane;
 
+/**
+ * @author Maor Hamami
+ */
+
 public class EasyConsolePanel extends JPanel
 {
 	private static final long serialVersionUID = -4806731606850804771L;
