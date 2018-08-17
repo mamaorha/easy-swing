@@ -22,7 +22,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.table.TableCellEditor;
 
 import co.il.nmh.easy.swing.components.table.EasyTable;
-import co.il.nmh.easy.swing.utils.MethodInvestigator;
+import co.il.nmh.easy.utils.reflection.MethodInvestigator;
 
 /**
  * @author Maor Hamami
