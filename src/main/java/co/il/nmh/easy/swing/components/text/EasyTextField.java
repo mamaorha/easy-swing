@@ -50,5 +50,12 @@ public class EasyTextField extends JTextField
 	public void addTextChangedListener(TextChangedListener textChangedListener)
 	{
 		textChangedListeners.add(textChangedListener);
+
+		textChangedListener.textChanged(getText());
+	}
+
+	public void clear()
+	{
+		setText("");
 	}
 }
