@@ -87,6 +87,13 @@ public class EasyGroupButton extends JButton implements IGroupComponent
 	public void setActive(boolean active)
 	{
 		this.active = active;
+
+		if (active)
+		{
+			easyGroup.pressed(this);
+		}
+
+		repaint();
 	}
 
 	@Override
