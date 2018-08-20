@@ -1,6 +1,6 @@
 package co.il.nmh.easy.swing.components.table.panel;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public class EasyTableButtonPanel extends JPanel
 
 	public EasyTableButtonPanel(Set<String> buttons)
 	{
-		buttonMap = new HashMap<>();
+		buttonMap = new LinkedHashMap<>();
 
 		setOpaque(true);
 

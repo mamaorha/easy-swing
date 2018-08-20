@@ -23,10 +23,10 @@ public class EasyTableCellRenderer implements TableCellRenderer
 
 		value = easyTable.get(row);
 
-		return render(table, isSelected, columnName, value);
+		return render(table, isSelected, row, column, columnName, value);
 	}
 
-	protected Component render(JTable table, boolean isSelected, String columnName, Object value)
+	protected Component render(JTable table, boolean isSelected, int row, int column, String columnName, Object value)
 	{
 		return easyTable.renderObject(columnName, value);
 	}

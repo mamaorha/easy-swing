@@ -214,6 +214,18 @@ public abstract class EasyTable
 		column.setCellEditor(new EasyTableComboBoxCellEditor(this, easyTableComboBoxRender));
 	}
 
+	public void setColumnMinWidth(String columnName, int minWidth)
+	{
+		Integer col = columnNameToIndexMap.get(columnName);
+
+		if (null == col)
+		{
+			throw new IllegalStateException("column doesn't exist");
+		}
+
+		table.getColumnModel().getColumn(col).setMinWidth(minWidth);
+	}
+
 	// listeners
 	public void addClickListener(EasyTableClickListener listener)
 	{

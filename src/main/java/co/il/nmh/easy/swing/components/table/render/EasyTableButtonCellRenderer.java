@@ -28,7 +28,7 @@ public class EasyTableButtonCellRenderer extends EasyTableCellRenderer
 	}
 
 	@Override
-	protected Component render(JTable table, boolean isSelected, String columnName, Object value)
+	protected Component render(JTable table, boolean isSelected, int row, int column, String columnName, Object value)
 	{
 		EasyTableButtonPanel buttonsPanel = new EasyTableButtonPanel(buttons);
 
@@ -36,6 +36,13 @@ public class EasyTableButtonCellRenderer extends EasyTableCellRenderer
 		{
 			easyTableBeforeButtonsRender.beforeButtonsRender(columnName, value, buttonsPanel.getButtonMap());
 		}
+
+		int minWidth = table.getColumnModel().getColumn(column).getMinWidth();
+		int width = buttonsPanel.getPreferredSize().width;
+
+		width = Math.max(minWidth, width);
+
+		table.getColumnModel().getColumn(column).setMinWidth(width);
 
 		return buttonsPanel;
 	}

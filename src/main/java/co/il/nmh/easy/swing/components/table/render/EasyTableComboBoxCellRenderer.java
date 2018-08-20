@@ -27,7 +27,7 @@ public class EasyTableComboBoxCellRenderer extends EasyTableCellRenderer
 	}
 
 	@Override
-	protected Component render(JTable table, boolean isSelected, String columnName, Object value)
+	protected Component render(JTable table, boolean isSelected, int row, int column, String columnName, Object value)
 	{
 		JComboBox<String> comboBox = new JComboBox<>();
 
