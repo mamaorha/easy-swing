@@ -168,14 +168,26 @@ public abstract class EasyTable
 
 	public void add(Object object)
 	{
+		Object[] objectArr = null;
+
+		if (object instanceof Object[])
+		{
+			objectArr = (Object[]) object;
+		}
+		else
+		{
+			objectArr = new Object[] { object };
+		}
+
 		DefaultTableModel model = getModel();
-		model.addRow(new Object[] { object });
+		model.addRow(objectArr);
 
 		int rowCount = rowCount();
+		Object element = get(rowCount - 1);
 
 		for (EasyTableElementListener easyTableElementListener : easyTableElementListeners)
 		{
-			easyTableElementListener.elementAdd(rowCount - 1, object);
+			easyTableElementListener.elementAdd(rowCount - 1, element);
 		}
 	}
 
