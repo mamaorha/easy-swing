@@ -28,6 +28,22 @@ public class EasyTableCellRenderer implements TableCellRenderer
 
 	protected Component render(JTable table, boolean isSelected, int row, int column, String columnName, Object value)
 	{
-		return easyTable.renderObject(columnName, value);
+		Component renderObject = easyTable.renderObject(columnName, value);
+
+		if (null != renderObject)
+		{
+			if (isSelected)
+			{
+				renderObject.setBackground(table.getSelectionBackground());
+				renderObject.setForeground(table.getSelectionForeground());
+			}
+			else
+			{
+				renderObject.setBackground(table.getBackground());
+				renderObject.setForeground(table.getForeground());
+			}
+		}
+
+		return renderObject;
 	}
 }

@@ -3,17 +3,23 @@ package co.il.nmh.easy.swing.components.table;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import co.il.nmh.easy.swing.components.table.data.RowSelectionMode;
 import co.il.nmh.easy.swing.components.table.editor.EasyTableCellEditor;
 import co.il.nmh.easy.swing.components.table.editor.EasyTableComboBoxCellEditor;
 import co.il.nmh.easy.swing.components.table.editor.action.EasyTableButtonActionEditor;
@@ -22,6 +28,8 @@ import co.il.nmh.easy.swing.components.table.listeners.EasyTableButtonListener;
 import co.il.nmh.easy.swing.components.table.listeners.EasyTableClickListener;
 import co.il.nmh.easy.swing.components.table.listeners.EasyTableComboBoxRender;
 import co.il.nmh.easy.swing.components.table.listeners.EasyTableComboChangedListener;
+import co.il.nmh.easy.swing.components.table.listeners.EasyTableElementListener;
+import co.il.nmh.easy.swing.components.table.listeners.EasyTableItemSelectedChangedListener;
 import co.il.nmh.easy.swing.components.table.render.EasyTableButtonCellRenderer;
 import co.il.nmh.easy.swing.components.table.render.EasyTableCellRenderer;
 import co.il.nmh.easy.swing.components.table.render.EasyTableComboBoxCellRenderer;
@@ -40,6 +48,8 @@ public abstract class EasyTable
 	protected Set<EasyTableClickListener> easyTableClickListeners;
 	protected Set<EasyTableButtonListener> easyTableButtonListeners;
 	protected Set<EasyTableComboChangedListener> easyTableComboChangedListeners;
+	protected Set<EasyTableItemSelectedChangedListener> easyTableItemSelectedChangedListeners;
+	protected Set<EasyTableElementListener> easyTableElementListeners;
 
 	public EasyTable(String[] columns)
 	{
@@ -47,6 +57,8 @@ public abstract class EasyTable
 		easyTableClickListeners = new HashSet<>();
 		easyTableButtonListeners = new HashSet<>();
 		easyTableComboChangedListeners = new HashSet<>();
+		easyTableItemSelectedChangedListeners = new HashSet<>();
+		easyTableElementListeners = new HashSet<>();
 
 		initTable(columns);
 
@@ -70,6 +82,27 @@ public abstract class EasyTable
 					for (EasyTableClickListener easyTableClickListener : easyTableClickListeners)
 					{
 						easyTableClickListener.clicked(columnName, row, col);
+					}
+				}
+			}
+		});
+
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+		{
+			@Override
+			public void valueChanged(ListSelectionEvent paramListSelectionEvent)
+			{
+				int[] selectedRows = getSelectedRows();
+
+				for (EasyTableItemSelectedChangedListener easyTableItemSelectedChangedListener : easyTableItemSelectedChangedListeners)
+				{
+					if (selectedRows.length > 0)
+					{
+						easyTableItemSelectedChangedListener.selected(selectedRows);
+					}
+					else
+					{
+						easyTableItemSelectedChangedListener.selectionClear();
 					}
 				}
 			}
@@ -108,6 +141,8 @@ public abstract class EasyTable
 
 		table.setDefaultEditor(Object.class, new EasyTableCellEditor(this));
 		table.setDefaultRenderer(Object.class, new EasyTableCellRenderer(this));
+		table.setRowSelectionAllowed(true);
+		setSelectionMode(RowSelectionMode.MULTIPLE_INTERVAL_SELECTION);
 	}
 
 	// basic actions
@@ -135,6 +170,13 @@ public abstract class EasyTable
 	{
 		DefaultTableModel model = getModel();
 		model.addRow(new Object[] { object });
+
+		int rowCount = rowCount();
+
+		for (EasyTableElementListener easyTableElementListener : easyTableElementListeners)
+		{
+			easyTableElementListener.elementAdd(rowCount - 1, object);
+		}
 	}
 
 	public Object get(int row)
@@ -143,13 +185,44 @@ public abstract class EasyTable
 		return value;
 	}
 
+	public List<Object> getAll()
+	{
+		List<Object> elements = new ArrayList<>();
+
+		int rowCount = rowCount();
+
+		for (int i = 0; i < rowCount; i++)
+		{
+			elements.add(get(i));
+		}
+
+		return elements;
+	}
+
 	public void removeRow(int row)
 	{
+		Object element = get(row);
+
+		for (EasyTableElementListener easyTableElementListener : easyTableElementListeners)
+		{
+			easyTableElementListener.elementRemoved(row, element);
+		}
+
 		getModel().removeRow(row);
 	}
 
 	public void clear()
 	{
+		List<Object> allElement = getAll();
+
+		for (int i = allElement.size() - 1; i >= 0; i--)
+		{
+			for (EasyTableElementListener easyTableElementListener : easyTableElementListeners)
+			{
+				easyTableElementListener.elementRemoved(i, allElement.get(i));
+			}
+		}
+
 		DefaultTableModel model = getModel();
 		model.setRowCount(0);
 	}
@@ -226,6 +299,28 @@ public abstract class EasyTable
 		table.getColumnModel().getColumn(col).setMinWidth(minWidth);
 	}
 
+	public void deleteSelectedRows()
+	{
+		int[] selectedRows = getSelectedRows();
+
+		Arrays.sort(selectedRows);
+
+		for (int i = selectedRows.length - 1; i >= 0; i--)
+		{
+			removeRow(selectedRows[i]);
+		}
+	}
+
+	public int[] getSelectedRows()
+	{
+		return table.getSelectedRows();
+	}
+
+	public void setSelectionMode(RowSelectionMode selectionMode)
+	{
+		table.setSelectionMode(selectionMode.getValue());
+	}
+
 	// listeners
 	public void addClickListener(EasyTableClickListener listener)
 	{
@@ -240,6 +335,16 @@ public abstract class EasyTable
 	public void addComboboxListener(EasyTableComboChangedListener listener)
 	{
 		easyTableComboChangedListeners.add(listener);
+	}
+
+	public void addEasyTableItemSelectedChangedListener(EasyTableItemSelectedChangedListener listener)
+	{
+		easyTableItemSelectedChangedListeners.add(listener);
+	}
+
+	public void addEasyTableElementListener(EasyTableElementListener listener)
+	{
+		easyTableElementListeners.add(listener);
 	}
 
 	public Set<EasyTableButtonListener> getEasyTableButtonListeners()
